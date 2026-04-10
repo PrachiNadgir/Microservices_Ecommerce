@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+
+  # 🔴 Redis
+  redis:
+    image: redis
+    container_name: my-redis
+    ports:
+      - "6379:6379"
+
+  # 🗄️ SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - SA_PASSWORD=YourStrong@Pass123
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+
+  # 📦 Product Service
+  productservice:
+    build:
+      context: ./ProductService
+    container_name: productservice
+    ports:
+      - "5001:8080"
+    depends_on:
+      - redis
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=EcommerceDb;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;
+      - Redis__ConnectionString=redis:6379
+
+  # 🔐 Auth Service
+  authservice:
+    build:
+      context: ./AuthService
+    container_name: authservice
+    ports:
+      - "5002:8080"
+
+  # 🌐 API Gateway
+  apigateway:
+    build:
+      context: ./ApiGateway
+    container_name: apigateway
+    ports:
+      - "5004:8080"
+    depends_on:
+      - productservice
+      - authservice
