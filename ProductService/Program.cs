@@ -28,10 +28,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     var connection = ConnectionMultiplexer.Connect(config); 
     Console.WriteLine("Redis Connected: " + connection.IsConnected); return connection; });
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()
-    ));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
