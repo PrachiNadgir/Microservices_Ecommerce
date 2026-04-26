@@ -1,0 +1,30 @@
+name: .NET CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "Ecommerce" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build Project
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run Tests
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Build Docker Image
+      run: docker build -t ecommerce-app .
