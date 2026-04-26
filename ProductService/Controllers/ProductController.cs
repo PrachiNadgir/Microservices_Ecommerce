@@ -35,17 +35,13 @@ namespace ProductService.Controllers
 
                 if (!cachedData.IsNullOrEmpty)
                 {
-                    Console.WriteLine("CACHE HIT");
                     var products = JsonSerializer.Deserialize<List<Product>>(cachedData.ToString());
-                    return Ok(products);
+                    if (products != null)
+                        return Ok(products);
                 }
             }
-            catch
-            {
-                Console.WriteLine("Redis failed");
-            }
+            catch { }
 
-          
             var data = await _context.Products.ToListAsync();
 
             try
@@ -60,10 +56,11 @@ namespace ProductService.Controllers
 
             return Ok(data);
         }
+
         [HttpPost]
-        public async Task<IActionResult> Add(ProductDto dto)
+        public async Task<IActionResult> Add([FromBody] ProductDto dto)
         {
-            if (dto == null)
+            if (dto == null || string.IsNullOrEmpty(dto.Name))
                 return BadRequest("Invalid product");
 
             var product = new Product
@@ -76,7 +73,7 @@ namespace ProductService.Controllers
             await _context.SaveChangesAsync();
 
             var db = _redis.GetDatabase();
-            await db.KeyDeleteAsync("products");
+            await db.KeyDeleteAsync(CACHE_KEY);
 
             return Ok(product);
         }
