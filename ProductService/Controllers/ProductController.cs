@@ -17,15 +17,17 @@ namespace ProductService.Controllers
         private readonly IConnectionMultiplexer? _redis=null;
         private readonly IHubContext<NotificationHub> _hub;
         private const string CACHE_KEY = "products";
-
         public ProductController(
             AppDbContext context,
-            IConnectionMultiplexer? redis,
-            IHubContext<NotificationHub> hub)   // ✅ FIXED
+            IHubContext<NotificationHub> hub,
+            IServiceProvider serviceProvider   // ✅ use this
+        )
         {
             _context = context;
-            _redis = redis;
-            _hub = hub;  // ✅ FIXED
+            _hub = hub;
+
+            // ✅ Try to resolve Redis safely
+            _redis = serviceProvider.GetService<IConnectionMultiplexer>();
         }
 
         [HttpGet]
