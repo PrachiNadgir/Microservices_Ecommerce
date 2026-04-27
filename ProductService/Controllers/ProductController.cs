@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
-using Microsoft.AspNetCore.SignalR
+using Microsoft.AspNetCore.SignalR;
 using ProductService.Hubs;
-
 
 namespace ProductService.Controllers
 {
@@ -15,15 +14,18 @@ namespace ProductService.Controllers
     public class ProductController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IConnectionMultiplexer? _redis; // ✅ nullable
+        private readonly IConnectionMultiplexer? _redis;
         private readonly IHubContext<NotificationHub> _hub;
         private const string CACHE_KEY = "products";
 
-        public ProductController(AppDbContext context, IConnectionMultiplexer? redis = null)
+        public ProductController(
+            AppDbContext context,
+            IConnectionMultiplexer? redis,
+            IHubContext<NotificationHub> hub)   // ✅ FIXED
         {
             _context = context;
             _redis = redis;
-               _hub = hub;
+            _hub = hub;  // ✅ FIXED
         }
 
         [HttpGet]
@@ -91,6 +93,8 @@ namespace ProductService.Controllers
                 }
                 catch { }
             }
+
+            // ✅ SignalR notification
             await _hub.Clients.All.SendAsync("ReceiveNotification", $"Product Added: {product.Name}");
 
             return Ok(product);
