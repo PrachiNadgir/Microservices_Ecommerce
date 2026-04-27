@@ -45,6 +45,8 @@ if (!string.IsNullOrEmpty(redisConnection))
     });
 }
 
+builder.Services.AddSignalR();
+
 
 // ✅ Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -73,5 +75,6 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
+app.MapHub<ProductService.Hubs.NotificationHub>("/notificationHub");
 
 app.Run();
