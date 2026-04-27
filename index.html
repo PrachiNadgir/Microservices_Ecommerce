@@ -2,7 +2,7 @@
 
 <script>
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://product-service-ow6k.onrender.com//notificationHub")
+    .withUrl("https://product-service-ow6k.onrender.com/notificationHub")
     .build();
 
 connection.on("ReceiveNotification", function(message) {
