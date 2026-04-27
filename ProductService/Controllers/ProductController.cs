@@ -3,56 +3,61 @@ using ProductService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace ProductService.Controllers
 {
-
-
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
     {
-
         private readonly AppDbContext _context;
-        private readonly IConnectionMultiplexer _redis;
+        private readonly IConnectionMultiplexer? _redis; // ✅ nullable
         private const string CACHE_KEY = "products";
 
-        public ProductController(AppDbContext context, IConnectionMultiplexer redis)
+        public ProductController(AppDbContext context, IConnectionMultiplexer? redis)
         {
             _context = context;
             _redis = redis;
         }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var db = _redis.GetDatabase();
+            IDatabase? db = null;
 
-            try
+            if (_redis != null)
             {
-                var cachedData = await db.StringGetAsync(CACHE_KEY);
-
-                if (!cachedData.IsNullOrEmpty)
+                try
                 {
-                    var products = JsonSerializer.Deserialize<List<Product>>(cachedData.ToString());
-                    if (products != null)
-                        return Ok(products);
+                    db = _redis.GetDatabase();
+
+                    var cachedData = await db.StringGetAsync(CACHE_KEY);
+
+                    if (!cachedData.IsNullOrEmpty)
+                    {
+                        var products = JsonSerializer.Deserialize<List<Product>>(cachedData!);
+                        if (products != null)
+                            return Ok(products);
+                    }
                 }
+                catch { }
             }
-            catch { }
 
             var data = await _context.Products.ToListAsync();
 
-            try
+            if (db != null)
             {
-                await db.StringSetAsync(
-                    CACHE_KEY,
-                    JsonSerializer.Serialize(data),
-                    TimeSpan.FromMinutes(5)
-                );
+                try
+                {
+                    await db.StringSetAsync(
+                        CACHE_KEY,
+                        JsonSerializer.Serialize(data),
+                        TimeSpan.FromMinutes(5)
+                    );
+                }
+                catch { }
             }
-            catch { }
 
             return Ok(data);
         }
@@ -72,36 +77,17 @@ namespace ProductService.Controllers
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
-            var db = _redis.GetDatabase();
-            await db.KeyDeleteAsync(CACHE_KEY);
+            if (_redis != null)
+            {
+                try
+                {
+                    var db = _redis.GetDatabase();
+                    await db.KeyDeleteAsync(CACHE_KEY);
+                }
+                catch { }
+            }
 
             return Ok(product);
         }
-
-
-
-        //        private static readonly List<Product> products = new List<Product>
-        //{
-        //    new () { Id = 1, Name = "Laptop", Price = 111000 },
-        //    new () { Id = 2, Name = "Smartphone", Price = 60000 },
-        //    new () { Id = 3, Name = "Headphones", Price = 25000 }
-        //};
-        //        [HttpGet]
-        //         public IActionResult Get()
-        //        {
-        //            return Ok(products);
-        //        }
-        //        [HttpPost]
-        //        public IActionResult Add([FromBody] List<Product> newProducts)
-        //        {
-        //            if (newProducts == null || !newProducts.Any())
-        //            {
-        //                return BadRequest("Product list is empty");
-        //            }
-
-        //            products.AddRange(newProducts);
-
-        //            return Ok(products);
-        //        }
     }
 }
