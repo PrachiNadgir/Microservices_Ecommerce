@@ -15,7 +15,7 @@ namespace ProductService.Controllers
         private readonly IConnectionMultiplexer? _redis; // ✅ nullable
         private const string CACHE_KEY = "products";
 
-        public ProductController(AppDbContext context, IConnectionMultiplexer? redis)
+        public ProductController(AppDbContext context, IConnectionMultiplexer? redis = null)
         {
             _context = context;
             _redis = redis;
