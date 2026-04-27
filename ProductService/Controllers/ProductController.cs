@@ -14,7 +14,7 @@ namespace ProductService.Controllers
     public class ProductController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IConnectionMultiplexer? _redis;
+        private readonly IConnectionMultiplexer? _redis=null;
         private readonly IHubContext<NotificationHub> _hub;
         private const string CACHE_KEY = "products";
 
