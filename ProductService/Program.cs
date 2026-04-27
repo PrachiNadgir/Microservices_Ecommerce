@@ -26,7 +26,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 
-// ✅ Redis (OPTIONAL - FIXED)
+// ✅ CORS (VERY IMPORTANT FOR SIGNALR)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:56210") // your frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
+
+// ✅ Redis (OPTIONAL)
 var redisConnection = builder.Configuration["Redis:ConnectionString"];
 
 if (!string.IsNullOrEmpty(redisConnection))
@@ -45,12 +57,15 @@ if (!string.IsNullOrEmpty(redisConnection))
     });
 }
 
+
+// ✅ SignalR
 builder.Services.AddSignalR();
 
 
 // ✅ Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // ✅ Controllers
 builder.Services.AddControllers();
@@ -61,6 +76,11 @@ var app = builder.Build();
 
 app.UseRouting();
 
+
+// ✅ USE CORS HERE (IMPORTANT ORDER)
+app.UseCors("AllowFrontend");
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -69,12 +89,16 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+// ✅ SignalR Hub
+app.MapHub<ProductService.Hubs.NotificationHub>("/notificationHub");
+
+
 // ✅ Auto migration
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
-app.MapHub<ProductService.Hubs.NotificationHub>("/notificationHub");
 
 app.Run();

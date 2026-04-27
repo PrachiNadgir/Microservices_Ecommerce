@@ -1,14 +1,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
 <script>
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://product-service-ow6k.onrender.com/notificationHub")
-    .build();
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://product-service-ow6k.onrender.com/notificationHub", {
+            withCredentials: true   // ✅ important for CORS
+        })
+        .withAutomaticReconnect()   // ✅ auto reconnect
+        .configureLogging(signalR.LogLevel.Information) // ✅ debug logs
+        .build();
 
-connection.on("ReceiveNotification", function(message) {
-    console.log("Notification:", message);
-    alert(message);
-});
+    // ✅ Listen for messages
+    connection.on("ReceiveNotification", function (message) {
+        console.log("✅ Notification:", message);
+        alert(message);
+    });
 
-connection.start();
+    // ✅ Start connection with error handling
+    async function startConnection() {
+        try {
+            await connection.start();
+            console.log("✅ Connected to SignalR");
+        } catch (err) {
+            console.error("❌ Connection Failed:", err);
+            setTimeout(startConnection, 5000); // retry
+        }
+    }
+
+    startConnection();
 </script>
