@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace ProductService.Controllers
 {
-    [Authorize] // all endpoints require login
+    [Authorize(Roles = "Admin")] // all endpoints require login
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
