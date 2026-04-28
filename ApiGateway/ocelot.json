@@ -1,7 +1,6 @@
 {
   "Routes": [
     {
-      // ✅ Swagger via /auth/swagger
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -11,10 +10,23 @@
         }
       ],
       "UpstreamPathTemplate": "/auth/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "Priority": 1
     },
     {
-      // ✅ Swagger direct path (THIS FIXES YOUR ERROR)
+      "DownstreamPathTemplate": "/swagger/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "product-service-ow6k.onrender.com",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/products/swagger/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "Priority": 1
+    },
+    {
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -24,10 +36,10 @@
         }
       ],
       "UpstreamPathTemplate": "/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "Priority": 1
     },
     {
-      // ✅ Auth APIs
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -40,7 +52,6 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
-      // ✅ Product APIs
       "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
