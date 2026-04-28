@@ -11,7 +11,7 @@ using ProductService.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ JWT
-var key = builder.Configuration["Jwt:Key"] ?? throw new Exception("JWT Key missing");
+var key = builder.Configuration["Jwt:Key"] ?? "TEMP_SECRET_KEY";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

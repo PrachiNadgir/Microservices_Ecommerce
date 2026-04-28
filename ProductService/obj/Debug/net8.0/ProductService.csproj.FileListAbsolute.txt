@@ -1,5 +1,4 @@
 E:\dotnetProjects\ProductService\bin\Debug\net8.0\appsettings.Development.json
-E:\dotnetProjects\ProductService\bin\Debug\net8.0\appsettings.json
 E:\dotnetProjects\ProductService\bin\Debug\net8.0\ProductService.staticwebassets.endpoints.json
 E:\dotnetProjects\ProductService\bin\Debug\net8.0\ProductService.exe
 E:\dotnetProjects\ProductService\bin\Debug\net8.0\ProductService.deps.json
@@ -118,3 +117,11 @@ E:\dotnetProjects\ProductService\obj\Debug\net8.0\refint\ProductService.dll
 E:\dotnetProjects\ProductService\obj\Debug\net8.0\ProductService.pdb
 E:\dotnetProjects\ProductService\obj\Debug\net8.0\ProductService.genruntimeconfig.cache
 E:\dotnetProjects\ProductService\obj\Debug\net8.0\ref\ProductService.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\Newtonsoft.Json.dll
+E:\dotnetProjects\ProductService\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
