@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace ProductService.Controllers
 {
-    [Authorize] // ✅ allow all authenticated users
+    [Authorize] // all endpoints require login
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
@@ -19,13 +19,13 @@ namespace ProductService.Controllers
         private readonly AppDbContext _context;
         private readonly IConnectionMultiplexer? _redis;
         private readonly IHubContext<NotificationHub> _hub;
+
         private const string CACHE_KEY = "products";
 
         public ProductController(
             AppDbContext context,
             IHubContext<NotificationHub> hub,
-            IServiceProvider serviceProvider
-        )
+            IServiceProvider serviceProvider)
         {
             _context = context;
             _hub = hub;
@@ -36,42 +36,36 @@ namespace ProductService.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            IDatabase? db = null;
-
             if (_redis != null)
             {
                 try
                 {
-                    db = _redis.GetDatabase();
+                    var db = _redis.GetDatabase();
+                    var cached = await db.StringGetAsync(CACHE_KEY);
 
-                    var cachedData = await db.StringGetAsync(CACHE_KEY);
-
-                    if (!cachedData.IsNullOrEmpty)
+                    if (!cached.IsNullOrEmpty)
                     {
-                        var products = JsonSerializer.Deserialize<List<Product>>(cachedData!);
-                        if (products != null)
-                            return Ok(products);
+                        var data = JsonSerializer.Deserialize<List<Product>>(cached!);
+                        if (data != null)
+                            return Ok(data);
                     }
                 }
                 catch { }
             }
 
-            var data = await _context.Products.ToListAsync();
+            var products = await _context.Products.ToListAsync();
 
-            if (db != null)
+            if (_redis != null)
             {
                 try
                 {
-                    await db.StringSetAsync(
-                        CACHE_KEY,
-                        JsonSerializer.Serialize(data),
-                        TimeSpan.FromMinutes(5)
-                    );
+                    var db = _redis.GetDatabase();
+                    await db.StringSetAsync(CACHE_KEY, JsonSerializer.Serialize(products), TimeSpan.FromMinutes(5));
                 }
                 catch { }
             }
 
-            return Ok(data);
+            return Ok(products);
         }
 
         // 🔹 GET NOTIFICATIONS
@@ -85,12 +79,12 @@ namespace ProductService.Controllers
             return Ok(data);
         }
 
-        // 🔹 ADD PRODUCT (Admin only)
+        // 🔹 ADD PRODUCT (ADMIN ONLY)
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add([FromBody] ProductDto dto)
         {
-            if (dto == null || string.IsNullOrEmpty(dto.Name))
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Name))
                 return BadRequest("Invalid product");
 
             var product = new Product
@@ -102,7 +96,7 @@ namespace ProductService.Controllers
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
-            // ✅ Clear Redis cache
+            // ❌ Clear cache
             if (_redis != null)
             {
                 try
@@ -113,10 +107,9 @@ namespace ProductService.Controllers
                 catch { }
             }
 
-            // ✅ Get userId from JWT
-            var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // 🔔 Send SignalR notification
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ✅ Send notification to that user
             if (!string.IsNullOrEmpty(userId))
             {
                 await _hub.Clients.User(userId).SendAsync("ReceiveNotification", new
@@ -128,7 +121,7 @@ namespace ProductService.Controllers
                 });
             }
 
-            // ✅ Save notification in DB
+            // 💾 Save notification
             _context.Notifications.Add(new Notification
             {
                 Message = $"Product Added: {product.Name}",
