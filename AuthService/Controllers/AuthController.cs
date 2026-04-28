@@ -24,20 +24,21 @@ namespace AuthService.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto dto)
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Email == dto.Email && u.Password == dto.Password);
+            var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 return Unauthorized("Invalid credentials");
+
 
             var keyString = _config["Jwt:Key"] ?? throw new Exception("JWT key missing");
             var key = Encoding.UTF8.GetBytes(keyString);
 
             var claims = new[]
-            {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
-    };
+      {
+    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(ClaimTypes.Role, user.Role ?? "User") // add Role column in User
+};
 
             var token = new JwtSecurityToken(
                 claims: claims,
@@ -60,11 +61,15 @@ namespace AuthService.Controllers
             if (exists)
                 return BadRequest("User already exists");
 
+          
+
             var user = new User
             {
                 Email = dto.Email,
                 Password = dto.Password
             };
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             _context.Users.Add(user);
             _context.SaveChanges();
