@@ -1,7 +1,7 @@
 {
   "Routes": [
-    // ================= AUTH SWAGGER =================
     {
+      // ================= AUTH SWAGGER =================
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -14,9 +14,8 @@
       "UpstreamHttpMethod": [ "GET" ],
       "Priority": 0
     },
-
-    // ================= PRODUCT SWAGGER =================
     {
+      // ================= PRODUCT SWAGGER =================
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -29,14 +28,13 @@
       "UpstreamHttpMethod": [ "GET" ],
       "Priority": 0
     },
-
-    // ================= SWAGGER JSON FIX =================
     {
+      // ================= SWAGGER JSON FIX (IMPORTANT) =================
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "product-service-ow6k.onrender.com",
+          "Host": "auth-service-411f.onrender.com",
           "Port": 443
         }
       ],
@@ -45,8 +43,8 @@
       "Priority": 0
     },
 
-    // ================= AUTH APIs =================
     {
+      // ================= AUTH APIs =================
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -60,6 +58,7 @@
       "Priority": 1
     },
     {
+      // Swagger compatibility
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -73,41 +72,42 @@
       "Priority": 1
     },
 
-    // ================= PRODUCT APIs =================
     {
-      "DownstreamPathTemplate": "/api/products",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "product-service-ow6k.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/products",
-      "UpstreamHttpMethod": [ "GET", "POST" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
+      // ================= PRODUCT APIs =================
+      {
+        "DownstreamPathTemplate": "/api/products",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "product-service-ow6k.onrender.com",
+            "Port": 443
+          }
+        ],
+        "UpstreamPathTemplate": "/api/products",
+        "UpstreamHttpMethod": [ "GET", "POST" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer"
+        },
+        "Priority": 2
       },
-      "Priority": 2
-    },
-    {
-      "DownstreamPathTemplate": "/api/products/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "product-service-ow6k.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/products/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      },
-      "Priority": 3
+      {
+        "DownstreamPathTemplate": "/api/products/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "product-service-ow6k.onrender.com",
+            "Port": 443
+          }
+        ],
+        "UpstreamPathTemplate": "/products/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer"
+        },
+        "Priority": 3
+      }
     }
   ],
-
   "GlobalConfiguration": {
     "BaseUrl": "https://api-gateway-1bzz.onrender.com"
   }
