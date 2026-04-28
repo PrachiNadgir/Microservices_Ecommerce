@@ -5,7 +5,7 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "auth-service-41lf.onrender.com",
+          "Host": "auth-service-411f.onrender.com",
           "Port": 443
         }
       ],
