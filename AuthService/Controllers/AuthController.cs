@@ -67,7 +67,9 @@ namespace AuthService.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim("role", user.Role) // ✅ important
+                new Claim("role", user.Role)
+                new Claim(ClaimTypes.Role, user.Role)
+                // ✅ important
             };
 
             var token = new JwtSecurityToken(
