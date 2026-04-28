@@ -48,6 +48,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var app = builder.Build();
+app.UseRouting();
 
 // ✅ Swagger (FIXED)
 app.UseSwagger();
