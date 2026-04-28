@@ -5,13 +5,29 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ Controllers
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// ✅ Swagger (WITH FIX)
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "AuthService API",
+        Version = "v1"
+    });
+
+    // 🔥 FIX: Remove "/api/auth" prefix from Swagger URLs
+    options.AddServer(new OpenApiServer
+    {
+        Url = "/"   // important
+    });
+});
 
 // ✅ Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -36,7 +52,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// ✅ Authorization
 builder.Services.AddAuthorization();
 
 // ✅ Logging
@@ -48,10 +63,9 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var app = builder.Build();
-app.UseRouting();
 
-// ✅ Swagger (FIXED)
 app.UseSwagger();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService API V1");
