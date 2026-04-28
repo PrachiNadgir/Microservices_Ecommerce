@@ -1,6 +1,5 @@
 {
   "Routes": [
-    // ================= AUTH SWAGGER =================
     {
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
@@ -14,8 +13,6 @@
       "UpstreamHttpMethod": [ "GET" ],
       "Priority": 0
     },
-
-    // ================= PRODUCT SWAGGER =================
     {
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
@@ -30,7 +27,6 @@
       "Priority": 0
     },
 
-    // ================= AUTH APIs =================
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
@@ -44,9 +40,7 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "Priority": 1
     },
-
     {
-      // Swagger compatibility
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -60,10 +54,8 @@
       "Priority": 1
     },
 
-    // ================= PRODUCT APIs =================
     {
-      // FIX for Swagger POST /api/products
-      "DownstreamPathTemplate": "/api/products{everything}",
+      "DownstreamPathTemplate": "/api/products",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -71,14 +63,13 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/products{everything}",
+      "UpstreamPathTemplate": "/api/products",
       "UpstreamHttpMethod": [ "GET", "POST" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       },
       "Priority": 2
     },
-
     {
       "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
@@ -88,7 +79,7 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/api/products/{everything}",
+      "UpstreamPathTemplate": "/products/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
@@ -96,7 +87,6 @@
       "Priority": 3
     }
   ],
-
   "GlobalConfiguration": {
     "BaseUrl": "https://api-gateway-1bzz.onrender.com"
   }
