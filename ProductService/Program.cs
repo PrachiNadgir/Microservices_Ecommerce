@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.SignalR;
 using ProductService.Hubs;
 using ProductService.Helpers;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
