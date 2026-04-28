@@ -63,7 +63,7 @@
     // ================= PRODUCT APIs =================
     {
       // FIX for Swagger POST /api/products
-      "DownstreamPathTemplate": "/api/products",
+      "DownstreamPathTemplate": "/api/products{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -71,7 +71,7 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/api/products",
+      "UpstreamPathTemplate": "/products{everything}",
       "UpstreamHttpMethod": [ "GET", "POST" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
@@ -88,7 +88,7 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/products/{everything}",
+      "UpstreamPathTemplate": "/api/products/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
