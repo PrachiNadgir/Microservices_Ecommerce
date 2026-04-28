@@ -53,7 +53,7 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "Priority": 1
     },
