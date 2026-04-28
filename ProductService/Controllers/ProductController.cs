@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace ProductService.Controllers
 {
-    [Authorize(Roles = "Admin")] // ✅ JWT protection
+    [Authorize] // ✅ allow all authenticated users
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
@@ -29,8 +29,6 @@ namespace ProductService.Controllers
         {
             _context = context;
             _hub = hub;
-
-            // ✅ Optional Redis
             _redis = serviceProvider.GetService<IConnectionMultiplexer>();
         }
 
@@ -75,6 +73,7 @@ namespace ProductService.Controllers
 
             return Ok(data);
         }
+
         // 🔹 GET NOTIFICATIONS
         [HttpGet("notifications")]
         public async Task<IActionResult> GetNotifications()
@@ -86,8 +85,9 @@ namespace ProductService.Controllers
             return Ok(data);
         }
 
-        // 🔹 ADD PRODUCT
+        // 🔹 ADD PRODUCT (Admin only)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add([FromBody] ProductDto dto)
         {
             if (dto == null || string.IsNullOrEmpty(dto.Name))
@@ -113,10 +113,10 @@ namespace ProductService.Controllers
                 catch { }
             }
 
-            // ✅ Get logged-in user ID from JWT
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // ✅ Get userId from JWT
+            var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ✅ Send notification ONLY to that user
+            // ✅ Send notification to that user
             if (!string.IsNullOrEmpty(userId))
             {
                 await _hub.Clients.User(userId).SendAsync("ReceiveNotification", new
@@ -139,6 +139,5 @@ namespace ProductService.Controllers
 
             return Ok(product);
         }
-
     }
 }
