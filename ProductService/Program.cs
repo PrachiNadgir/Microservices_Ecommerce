@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using ProductService.Hubs;
 using ProductService.Helpers;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +27,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
             // ✅ ADD THESE TWO LINES
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = ClaimTypes.NameIdentifier
+            RoleClaimType = "role",
+            NameClaimType = "nameid"
         };
 
         // ✅ SignalR JWT support
