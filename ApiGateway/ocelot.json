@@ -1,6 +1,7 @@
 {
   "Routes": [
     {
+      // ✅ AUTH SWAGGER
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -14,6 +15,7 @@
       "Priority": 1
     },
     {
+      // ✅ PRODUCT SWAGGER
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -26,20 +28,9 @@
       "UpstreamHttpMethod": [ "GET" ],
       "Priority": 1
     },
+
     {
-      "DownstreamPathTemplate": "/swagger/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "auth-service-411f.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ],
-      "Priority": 1
-    },
-    {
+      // ✅ AUTH API (clean URL)
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -53,6 +44,7 @@
       "Priority": 2
     },
     {
+      // ✅ AUTH API (Swagger compatibility)
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -65,7 +57,9 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "Priority": 2
     },
+
     {
+      // ✅ PRODUCT API (Swagger FIX - THIS SOLVES YOUR ERROR)
       "DownstreamPathTemplate": "/api/products",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -82,6 +76,7 @@
       "Priority": 3
     },
     {
+      // ✅ PRODUCT API (clean URL)
       "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
