@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace ProductService.Controllers
 {
-    [Authorize] // ✅ JWT protection
+    [Authorize(Roles = "Admin")] // ✅ JWT protection
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
@@ -75,6 +75,16 @@ namespace ProductService.Controllers
 
             return Ok(data);
         }
+        // 🔹 GET NOTIFICATIONS
+        [HttpGet("notifications")]
+        public async Task<IActionResult> GetNotifications()
+        {
+            var data = await _context.Notifications
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            return Ok(data);
+        }
 
         // 🔹 ADD PRODUCT
         [HttpPost]
@@ -129,5 +139,6 @@ namespace ProductService.Controllers
 
             return Ok(product);
         }
+
     }
 }

@@ -1,8 +1,10 @@
-<input type="text" id="email" placeholder="Email">
+<!--<input type="text" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 <button onclick="login()">Login</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<ul id="notifications"></ul>--> <!-- ✅ REQUIRED -->
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
 <script>
     let connection = null;
@@ -11,7 +13,7 @@
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        const res = await fetch("https://YOUR-AUTH-SERVICE.onrender.com/api/auth/login", {
+        const res = await fetch("http://localhost:5002/api/auth/login", { // ✅ change this
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -24,11 +26,15 @@
 
         const data = await res.json();
 
-        if (data.token) {
-            localStorage.setItem("token", data.token);
-            alert("Login successful");
-            startSignalR();
+        if (!data.token) {
+            alert("Invalid response");
+            return;
         }
+
+        localStorage.setItem("token", data.token);
+        alert("Login successful");
+
+        startSignalR();
     }
 
     function startSignalR() {
@@ -45,11 +51,38 @@
             .build();
 
         connection.on("ReceiveNotification", function (data) {
-            console.log("Notification:", data);
+            const list = document.getElementById("notifications");
+
+            const item = document.createElement("li");
+            item.innerText = `${data.type}: ${data.name} (${data.price})`;
+
+            list.prepend(item);
         });
 
+        async function loadNotifications() {
+            const res = await fetch("https://product-service-ow6k.onrender.com/api/products/notifications", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+
+            data.forEach(n => {
+                const list = document.getElementById("notifications");
+
+                const item = document.createElement("li");
+                item.innerText = n.message;
+
+                list.appendChild(item);
+            });
+        }
+
         connection.start()
-            .then(() => console.log("✅ Connected to SignalR"))
+            .then(() => {
+                console.log("✅ Connected to SignalR");
+                loadNotifications(); // ✅ FIX
+            })
             .catch(err => console.error("❌ Error:", err));
     }
 
@@ -58,4 +91,4 @@
             startSignalR();
         }
     };
-</script>
+</script>-->
