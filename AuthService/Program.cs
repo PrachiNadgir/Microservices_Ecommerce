@@ -1,17 +1,24 @@
-using ProductService.Data;
-using StackExchange.Redis;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AuthService.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.SignalR;
-using ProductService.Hubs;
-using ProductService.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ✅ Controllers
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// ✅ Database
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // ✅ JWT
-var key = builder.Configuration["Jwt:Key"] ?? "TEMP_SECRET_KEY";
+var keyString = builder.Configuration["Jwt:Key"] ?? "TEMP_SECRET_KEY";
+var key = Encoding.UTF8.GetBytes(keyString);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -22,96 +29,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-        };
-
-        // ✅ SignalR JWT support
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-                var path = context.HttpContext.Request.Path;
-
-                if (!string.IsNullOrEmpty(accessToken) &&
-                    path.StartsWithSegments("/notificationHub"))
-                {
-                    context.Token = accessToken;
-                }
-
-                return Task.CompletedTask;
-            }
+            IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
 
 builder.Services.AddAuthorization();
 
-// ✅ CORS (FIXED FOR LOCAL + RENDER)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+// ✅ Logging
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-// ✅ Redis (OPTIONAL)
-var redisConnection = builder.Configuration["Redis:ConnectionString"];
-
-if (!string.IsNullOrEmpty(redisConnection))
-{
-    builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    {
-        var config = ConfigurationOptions.Parse(redisConnection);
-        config.AbortOnConnectFail = false;
-        config.ConnectRetry = 5;
-        config.ConnectTimeout = 10000;
-
-        return ConnectionMultiplexer.Connect(config);
-    });
-}
-
-// ✅ SignalR
-builder.Services.AddSignalR(options =>
-{
-    options.EnableDetailedErrors = true;
-});
-
-// ✅ Map userId → SignalR
-builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
-// ✅ Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// ✅ Controllers + Swagger
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Host.UseSerilog();
 
 var app = builder.Build();
-
-app.UseRouting();
-
-// ✅ CORS FIRST
-
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowAll");
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// ✅ SignalR endpoint
-app.MapHub<NotificationHub>("/notificationHub");
-
-// ✅ Auto migration
+// ✅ Migration
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
