@@ -50,11 +50,19 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
             "Ocelot": {
+              "target": "Package",
+              "version": "[24.1.0, )"
+            },
+            "Ocelot.Provider.Polly": {
               "target": "Package",
               "version": "[24.1.0, )"
             },
@@ -77,19 +85,19 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.25, 8.0.25]"
+              "version": "[8.0.26, 8.0.26]"
             },
             {
               "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[8.0.25, 8.0.25]"
+              "version": "[8.0.26, 8.0.26]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.25, 8.0.25]"
+              "version": "[8.0.26, 8.0.26]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[8.0.25, 8.0.25]"
+              "version": "[8.0.26, 8.0.26]"
             }
           ],
           "frameworkReferences": {
@@ -100,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
