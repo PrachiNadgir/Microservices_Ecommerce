@@ -21,6 +21,7 @@ namespace AuthService.Controllers
             _context = context;
         }
 
+        // 🔹 REGISTER
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDto dto)
         {
@@ -29,16 +30,14 @@ namespace AuthService.Controllers
 
             var email = dto.Email.Trim().ToLower();
 
-            var exists = _context.Users.Any(u => u.Email == email);
-
-            if (exists)
+            if (_context.Users.Any(u => u.Email == email))
                 return BadRequest("User already exists");
 
             var user = new User
             {
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = "Admin"
+                Role = "Admin" // change if needed
             };
 
             _context.Users.Add(user);
@@ -47,6 +46,7 @@ namespace AuthService.Controllers
             return Ok("User registered successfully");
         }
 
+        // 🔹 LOGIN
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto dto)
         {
@@ -60,16 +60,16 @@ namespace AuthService.Controllers
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return Unauthorized("Invalid credentials");
 
-            var keyString = _config["Jwt:Key"] ?? "TEMP_SECRET_KEY";
-            var key = Encoding.UTF8.GetBytes(keyString);
+            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "TEMP_SECRET_KEY");
 
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
+
+                // ✅ IMPORTANT (both for safety)
                 new Claim("role", user.Role),
                 new Claim(ClaimTypes.Role, user.Role)
-                // ✅ important
             };
 
             var token = new JwtSecurityToken(
