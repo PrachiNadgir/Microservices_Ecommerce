@@ -2,30 +2,33 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "authservice",
-          "Port": 8080
+          "Host": "auth-service-41lf.onrender.com",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/api/products",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/products/{everything}",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "productservice",
-          "Port": 8080
+          "Host": "product-service-ow6k.onrender.com",
+          "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/products",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamPathTemplate": "/products/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5004"
+    "BaseUrl": "https://your-api-gateway.onrender.com"
   }
 }
