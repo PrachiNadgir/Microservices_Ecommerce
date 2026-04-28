@@ -48,10 +48,23 @@
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "Priority": 2
     },
-
+    {
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth-service-411f.onrender.com",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "Priority": 2
+    },
     {
       "DownstreamPathTemplate": "/api/products",
       "DownstreamScheme": "https",
@@ -65,8 +78,9 @@
       "UpstreamHttpMethod": [ "GET", "POST" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
-      }
-    }
+      },
+      "Priority": 3
+    },
     {
       "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
@@ -80,7 +94,8 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
-      }
+      },
+      "Priority": 4
     }
   ],
   "GlobalConfiguration": {
