@@ -12,5 +12,9 @@ WORKDIR /app
 
 COPY --from=build /app/out .
 
+# ✅ IMPORTANT FOR RENDER
+ENV ASPNETCORE_URLS=http://+:$PORT
+
 EXPOSE 8080
+
 ENTRYPOINT ["dotnet", "ApiGateway.dll"]
