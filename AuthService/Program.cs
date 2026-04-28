@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             // ✅ FIXED
             RoleClaimType = "role",
-            NameClaimType = "nameid"
+            NameClaimType = ClaimTypes.NameIdentifier
         };
     }); // ✅ IMPORTANT
 

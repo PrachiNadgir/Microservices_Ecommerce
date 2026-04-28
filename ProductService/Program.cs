@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             // ✅ ADD THESE TWO LINES
             RoleClaimType = "role",
-            NameClaimType = "nameid"
+            NameClaimType = ClaimTypes.NameIdentifier
         };
 
         // ✅ SignalR JWT support
