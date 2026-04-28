@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      // ✅ Swagger route (VERY IMPORTANT)
+      // ✅ Swagger via /auth/swagger
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -11,6 +11,19 @@
         }
       ],
       "UpstreamPathTemplate": "/auth/swagger/{everything}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      // ✅ Swagger direct path (THIS FIXES YOUR ERROR)
+      "DownstreamPathTemplate": "/swagger/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth-service-411f.onrender.com",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/swagger/{everything}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
