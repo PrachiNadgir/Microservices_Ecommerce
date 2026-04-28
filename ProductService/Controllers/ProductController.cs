@@ -6,30 +6,35 @@ using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using ProductService.Hubs;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ProductService.Controllers
 {
+    [Authorize] // ✅ JWT protection
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IConnectionMultiplexer? _redis=null;
+        private readonly IConnectionMultiplexer? _redis;
         private readonly IHubContext<NotificationHub> _hub;
         private const string CACHE_KEY = "products";
+
         public ProductController(
             AppDbContext context,
             IHubContext<NotificationHub> hub,
-            IServiceProvider serviceProvider   // ✅ use this
+            IServiceProvider serviceProvider
         )
         {
             _context = context;
             _hub = hub;
 
-            // ✅ Try to resolve Redis safely
+            // ✅ Optional Redis
             _redis = serviceProvider.GetService<IConnectionMultiplexer>();
         }
 
+        // 🔹 GET PRODUCTS
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -71,6 +76,7 @@ namespace ProductService.Controllers
             return Ok(data);
         }
 
+        // 🔹 ADD PRODUCT
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] ProductDto dto)
         {
@@ -86,6 +92,7 @@ namespace ProductService.Controllers
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
+            // ✅ Clear Redis cache
             if (_redis != null)
             {
                 try
@@ -96,8 +103,29 @@ namespace ProductService.Controllers
                 catch { }
             }
 
-            // ✅ SignalR notification
-            await _hub.Clients.All.SendAsync("ReceiveNotification", $"Product Added: {product.Name}");
+            // ✅ Get logged-in user ID from JWT
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // ✅ Send notification ONLY to that user
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _hub.Clients.User(userId).SendAsync("ReceiveNotification", new
+                {
+                    type = "PRODUCT_ADDED",
+                    name = product.Name,
+                    price = product.Price,
+                    time = DateTime.UtcNow
+                });
+            }
+
+            // ✅ Save notification in DB
+            _context.Notifications.Add(new Notification
+            {
+                Message = $"Product Added: {product.Name}",
+                CreatedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
 
             return Ok(product);
         }

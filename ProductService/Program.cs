@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
+using ProductService.Hubs;
+using ProductService.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,44 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/notificationHub"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
+
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("✅ JWT Token Validated for user: " +
+                    context.Principal?.Identity?.Name);
+
+                return Task.CompletedTask;
+            },
+
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("❌ JWT Authentication Failed: " + context.Exception.Message);
+                return Task.CompletedTask;
+            },
+
+            OnChallenge = context =>
+            {
+                Console.WriteLine("⚠️ Unauthorized request to: " +
+                    context.HttpContext.Request.Path);
+
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -59,7 +100,14 @@ if (!string.IsNullOrEmpty(redisConnection))
 
 
 // ✅ SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+
+// ✅ Custom UserIdProvider for SignalR
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 
 // ✅ Database
