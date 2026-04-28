@@ -44,3 +44,16 @@ E:\dotnetProjects\ApiGateway\obj\Debug\net8.0\refint\ApiGateway.dll
 E:\dotnetProjects\ApiGateway\obj\Debug\net8.0\ApiGateway.pdb
 E:\dotnetProjects\ApiGateway\obj\Debug\net8.0\ApiGateway.genruntimeconfig.cache
 E:\dotnetProjects\ApiGateway\obj\Debug\net8.0\ref\ApiGateway.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\ocelot.json
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Ocelot.Provider.Polly.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Polly.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\Polly.Core.dll
+E:\dotnetProjects\ApiGateway\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+E:\dotnetProjects\ApiGateway\obj\Debug\net8.0\ApiGateway.sourcelink.json

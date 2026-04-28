@@ -1,7 +1,5 @@
 {
   "Routes": [
-
-    // 🔐 AUTH API
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
@@ -14,8 +12,21 @@
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
-
-    // 📦 PRODUCT API
+    {
+      "DownstreamPathTemplate": "/api/products",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "product-service-ow6k.onrender.com",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/products",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
+    },
     {
       "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
@@ -30,34 +41,6 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
-    },
-
-    // 📄 AUTH SWAGGER
-    {
-      "DownstreamPathTemplate": "/swagger/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "auth-service-41lf.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/auth/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-
-    // 📄 PRODUCT SWAGGER
-    {
-      "DownstreamPathTemplate": "/swagger/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "product-service-ow6k.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/products/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
     }
   ],
   "GlobalConfiguration": {
