@@ -49,15 +49,11 @@ builder.Services.AddAuthorization();
 // ✅ CORS (FIXED FOR LOCAL + RENDER)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:56210",
-                "https://product-service-ow6k.onrender.com"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -100,10 +96,12 @@ var app = builder.Build();
 app.UseRouting();
 
 // ✅ CORS FIRST
-app.UseCors("AllowFrontend");
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
