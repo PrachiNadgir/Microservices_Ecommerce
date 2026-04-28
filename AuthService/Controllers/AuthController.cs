@@ -38,7 +38,7 @@ namespace AuthService.Controllers
             {
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = "User"
+                Role = "Admin"
             };
 
             _context.Users.Add(user);
