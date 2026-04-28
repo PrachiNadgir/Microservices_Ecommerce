@@ -1,21 +1,7 @@
 {
   "Routes": [
     {
-      // ✅ AUTH SWAGGER
-      "DownstreamPathTemplate": "/swagger/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "auth-service-411f.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/auth/swagger/{everything}",
-      "UpstreamHttpMethod": [ "GET" ],
-      "Priority": 1
-    },
-    {
-      // ✅ PRODUCT SWAGGER
+      // ✅ PRODUCT SWAGGER (NO AUTH)
       "DownstreamPathTemplate": "/swagger/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -30,36 +16,25 @@
     },
 
     {
-      // ✅ AUTH API (clean URL)
-      "DownstreamPathTemplate": "/api/auth/{everything}",
+      // ✅ PRODUCT API (WITH AUTH)
+      "DownstreamPathTemplate": "/api/products/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "auth-service-411f.onrender.com",
+          "Host": "product-service-ow6k.onrender.com",
           "Port": 443
         }
       ],
-      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamPathTemplate": "/products/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "Priority": 2
-    },
-    {
-      // ✅ AUTH API (Swagger compatibility)
-      "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "auth-service-411f.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
       "Priority": 2
     },
 
     {
-      // ✅ PRODUCT API (Swagger FIX - THIS SOLVES YOUR ERROR)
+      // ✅ FIX FOR /api/products (Swagger POST issue)
       "DownstreamPathTemplate": "/api/products",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -74,23 +49,6 @@
         "AuthenticationProviderKey": "Bearer"
       },
       "Priority": 3
-    },
-    {
-      // ✅ PRODUCT API (clean URL)
-      "DownstreamPathTemplate": "/api/products/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "product-service-ow6k.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/products/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      },
-      "Priority": 4
     }
   ],
   "GlobalConfiguration": {
