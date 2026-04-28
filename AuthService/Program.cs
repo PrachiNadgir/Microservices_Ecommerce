@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ Controllers
@@ -32,14 +31,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-
-            // ✅ FIXED
             RoleClaimType = "role",
             NameClaimType = ClaimTypes.NameIdentifier
         };
-    }); // ✅ IMPORTANT
+    });
 
-// ✅ Authorization (outside)
+// ✅ Authorization
 builder.Services.AddAuthorization();
 
 // ✅ Logging
@@ -52,13 +49,19 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
+// ✅ Swagger (FIXED)
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService API V1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 // ✅ Migration
