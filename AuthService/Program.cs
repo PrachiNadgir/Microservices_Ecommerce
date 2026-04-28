@@ -29,10 +29,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
-    });
+            IssuerSigningKey = new SymmetricSecurityKey(key),
 
+            // ✅ FIXED
+            RoleClaimType = "role",
+            NameClaimType = "nameid"
+        };
+    }); // ✅ IMPORTANT
+
+// ✅ Authorization (outside)
 builder.Services.AddAuthorization();
 
 // ✅ Logging
